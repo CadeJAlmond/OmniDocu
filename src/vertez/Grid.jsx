@@ -68,13 +68,10 @@ export default function Grid({
   const defaultGridStylings = {
     h: "min-h-[95%] max-h-[95%]",
     w: "min-w-[95%] max-w-[95%]",
-    p: "p-[15px]",
+    p: "p-[0px]",
     gap: "gap-[25px]",
-    bg: "bg-[#fffbeb]/90",
     grid: "grid",
-    columns: columns,
-    lgColumns : lgColumns ? lgColumns : " ",
-    smColumns : smColumns ? smColumns : " ",
+    columns: columns
   };
 
   const gridStyling = applyCustomStyles(defaultGridStylings, customGridStyles);
@@ -82,9 +79,11 @@ export default function Grid({
   return (
     <section className={gridStyling}>
      {
-      gridData.map( (gridElementData, index) => {
+      gridData.map((gridElementData, index) => {
+        const GridComponent = gridElementData?.InputComponent ?? GridItemComponent;
+        console.log(gridElementData?.onClick || gridItemOnClick , gridItemOnClick)
         return (
-          <GridItemComponent 
+          <GridComponent 
             {...gridElementData} 
             key={gridElementData[gridDataKey]} 
             onClick={gridElementData?.onClick || gridItemOnClick }

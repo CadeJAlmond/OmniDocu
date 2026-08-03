@@ -8,6 +8,7 @@
 import { useState } from "react";
 import { applyCustomStyles } from "./ApplyCustomStyles";
 import { Tooltip } from "./Tooltip";
+import { vertexThemeBG, vertexThemeText } from "../VertexStyles";
 
 /**
  * @param {React.JSX} children : Custom JSX to render instead of 
@@ -97,10 +98,27 @@ export default function Accordion({ children, items = [], multiSelect = false, s
  * @returns {Component} A single accordion section with header and content.
  */
 export function AccordionItem({ label, children, content, isOpen, onToggle, tooltip }) {
+  const accordionContainerStyling = [
+    "border-[1px]",
+    vertexThemeBG.border,
+    "rounded-[5px]"
+  ].join(" ");
+
+  const accordionContainerTitleStyling = [
+    vertexThemeBG.surface,
+    vertexThemeBG.surfaceHover,
+    vertexThemeText.textSecondary,
+    "flex", 
+    "place-content-between", 
+    "items-center", 
+    "px-[15px] py-[10px]", 
+    "cursor-pointer", 
+  ].join(" ")
+
   return (
-    <div className="border-[1px] border-[#2d323b]/70 rounded-[5px]">
+    <div className={accordionContainerStyling}>
       <div
-        className="flex place-content-between items-center px-[15px] py-[10px] cursor-pointer text-[#f4f4f5] hover:bg-[#ffffff]/5"
+        className={accordionContainerTitleStyling}
         onClick={onToggle}
       >
         <span className="text-[16px] font-medium">{label}</span>

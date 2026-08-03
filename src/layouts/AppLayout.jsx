@@ -1,4 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { vertexThemeBG, vertexThemeColors, vertexThemeText } from "../VertexStyles";
+import Button from "../vertez/Button";
 
 /* ── Home icon ── */
 function HomeIcon({ active }) {
@@ -40,30 +42,54 @@ function DocIcon({ active }) {
   );
 }
 
+const navigationContainerStyling = [
+  "bg-[#1c1816]",
+  "border-[#382e29] border-[1px]",
+  vertexThemeText.textNormal,
+  "px-[6px]",
+  "w-[40px]",
+  "min-w-[40px]",
+  "flex",
+  "flex-col"
+].join(" ");
+
+const screenContainerStyling = [
+  vertexThemeBG.appBackground,
+  "flex-1",
+  "overflow-auto"
+].join(" ");
+
+const sidebarTitleStyling = [
+  vertexThemeText.textPrimary,
+  "text-[32px]", 
+  "font-semibold",
+  "font-inter",
+  "tracking-[0.35px]",
+  "mb-[-10px]"
+].join(" ");
+
 /* ── App layout with persistent sidebar + <Outlet /> ── */
 export default function AppLayout() {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden text-[#BB99FF]">
       {/* Sidebar */}
-      <aside className="w-[280px] min-w-[280px] bg-white border-r border-[#E5E7EB] flex flex-col">
+      <aside className={navigationContainerStyling}>
         {/* Brand */}
-        <div className="px-[16px] py-[20px] border-b border-[#E5E7EB]">
-          <h1 className="text-[20px] font-semibold text-[#141b2b] font-inter tracking-tight">
-            Advance Docs
+        <div className="px-[16px] py-[12px]">
+          <h1 className={sidebarTitleStyling}>
           </h1>
+          <p>
+          </p>
+          {/* <Button styles={{ w: "w-[100%]" }}>+ New Document</Button> */}
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-[16px] py-[12px] flex flex-col gap-1">
+        <nav className="flex-1 mt-[15px] px-[16px] py-[12px] flex flex-col gap-[18px]">
           <NavLink
             to="/"
             end
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative ${
-                isActive
-                  ? "bg-[#f3e8ff] text-[#6D28D9]"
-                  : "text-[#4a4455] hover:bg-[#f9f9ff]"
-              }`
+              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative`
             }
           >
             {({ isActive }) => (
@@ -72,8 +98,7 @@ export default function AppLayout() {
                 {isActive && (
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[4px] h-5 bg-[#6D28D9] rounded-r" />
                 )}
-                <HomeIcon active={isActive} />
-                <span>Home</span>
+               {/* <span>Home</span> */}
               </>
             )}
           </NavLink>
@@ -82,11 +107,7 @@ export default function AppLayout() {
             to="/"
             end={false}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative ${
-                isActive
-                  ? "bg-[#f3e8ff] text-[#6D28D9]"
-                  : "text-[#4a4455] hover:bg-[#f9f9ff]"
-              }`
+              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative`
             }
           >
             {({ isActive }) => (
@@ -94,15 +115,14 @@ export default function AppLayout() {
                 {isActive && (
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[4px] h-5 bg-[#6D28D9] rounded-r" />
                 )}
-                <DocIcon active={isActive} />
-                <span>Documents</span>
+                {/* <span>Documents</span> */}
               </>
             )}
           </NavLink>
         </nav>
 
         {/* Sidebar footer */}
-        <div className="px-[16px] py-[12px] border-t border-[#E5E7EB]">
+        <div className="px-[16px] py-[12px]">
           <span className="text-[12px] text-[#9ca3af] font-inter">
             Advance Docs v1
           </span>
@@ -110,7 +130,7 @@ export default function AppLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto bg-[#f9f9ff]">
+      <main className={screenContainerStyling}>
         <Outlet />
       </main>
     </div>

@@ -2,8 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import Button from "../../vertez/Button";
-import DropdownMenu from "../../vertez/DropdownMenu";
+import Button from "../vertez/Button";
+import DropdownMenu from "../vertez/DropdownMenu";
 
 /* -- DocumentEditor: viewing and editing modes with Traditional/Markdown view type -- */
 
@@ -137,14 +137,13 @@ export default function DocumentEditor() {
   return (
     <div className="max-w-[820px] mx-auto py-[40px] px-[40px]">
       {/* Editor toolbar */}
-      <div className="flex items-center justify-between mb-[24px] pb-[16px] border-b border-[#E5E7EB]">
+      <div className="flex items-center justify-between mb-[24px] pb-[16px]">
         <div className="flex items-center gap-[12px]">
           <Button
             onClick={() => navigate("/")}
             styles={{
               bg: "bg-transparent",
               text: "text-[14px] text-[#4B5563]",
-              border: "border border-[#E5E7EB]",
               h: "min-h-[36px]",
               px: "px-[16px]",
               rounded: "rounded-[4px]",
@@ -162,7 +161,6 @@ export default function DocumentEditor() {
             styles={{
               bg: "bg-transparent",
               text: "text-[14px] text-[#ba1a1a]",
-              border: "border border-[#ba1a1a]",
               h: "min-h-[36px]",
               px: "px-[16px]",
               rounded: "rounded-[4px]",
@@ -233,7 +231,7 @@ export default function DocumentEditor() {
           <div className="text-[14px] text-[#4a4455] mb-[32px]">
             Last edited: {new Date(doc.lastEdited).toLocaleString()}
           </div>
-          <div className="border-t border-[#E5E7EB] pt-[24px]">
+          <div className="">
             {renderStyledContent(doc.content)}
           </div>
         </div>
@@ -260,7 +258,7 @@ export default function DocumentEditor() {
               placeholder="Start writing..."
               spellCheck
             />
-            <div className="flex-1 border-t border-[#E5E7EB] pt-[16px]">
+            <div className="flex-1 pt-[16px]">
               <span className="text-[12px] text-[#4a4455] uppercase tracking-wide mb-[8px] block">
                 Preview
               </span>
@@ -296,7 +294,7 @@ export default function DocumentEditor() {
       )}
 
       {/* Footer bar — save + word/character count */}
-      <div className="flex items-center justify-between pt-[16px] border-t border-[#E5E7EB] mt-[16px]">
+      <div className="flex items-center justify-between pt-[16px] mt-[16px]">
         <div className="flex gap-[16px] text-[12px] text-[#4a4455]">
           <span>{wordCount} words</span>
           <span>{charCount} characters</span>

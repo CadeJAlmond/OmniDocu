@@ -36,12 +36,23 @@ export default function DualInput({
     "text-[15px]",
     "ml-[5px]",
     "pt-[20px]"
-  ].join(" ")
+  ].join(" ");
+
+  const textStyling = [
+    "text-nowrap", 
+    "text-sm",
+    "font-medium",
+    vertexThemeText.textSecondary,
+    "flex mb-[6px]",
+    "tracking-wide",
+    "flex items-center", 
+    "justify-between"
+  ].join(" ");
 
   return (
     <div className="flex flex-col gap-2 w-[100%]">
-      <div className="text-nowrap text-sm font-medium text-[#ffffffcc] flex mb-[6px] tracking-wide flex items-center justify-between">
-        <p>{text} {required && <span className={requiredStyling}>*</span>} {tooltip && <Tooltip content={tooltip} />}</p>  
+      <div className={textStyling}>
+        <p>{required && <span className={requiredStyling}>*</span>} {text} {tooltip && <Tooltip content={tooltip} />}</p>  
         <Input
           key={`input-${name}`}
           formValueUpdate={formValueUpdate}

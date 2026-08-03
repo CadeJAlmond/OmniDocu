@@ -10,19 +10,19 @@
  */
 
 import { applyCustomStyles } from "./ApplyCustomStyles";
-import { vertexThemeBG } from "../VertexStyles";
+import { vertexThemeBG, vertexThemeText } from "../VertexStyles";
 
 /* --=== Imports ===-- */
 export default function Button({ children, styles = {}, onClick }) {
   // Setup styles for Buttons
   const defaultStylings = {
-    h: "min-h-[37.5px] max-h-[37.5px]",
-    px: "px-[20.5px]",
-    color: "text-[#ffffff]",
+    h: "min-h-[36.5px] max-h-[36.5px]",
+    px: "px-[15.5px]",
     bg: vertexThemeBG.btnPrimary,
     bgHover: vertexThemeBG.btnPrimaryHover,
-    border: "rounded-[5px]",
-    text: "text-[20px] text-[#ffffff]",
+    border: "border-none",
+    rounded: "rounded-[5px]",
+    text: ["text-[17px] text-[#16111B]"].join(" "),
     flex: "flex",
     justify: "justify-center",
     wrap: "flex-wrap",

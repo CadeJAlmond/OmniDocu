@@ -5,7 +5,7 @@
 export default function ScreenContainer({ children, className = "" }) {
   return (
     <div
-      className={`doc-canvas px-[16px] sm:px-[24px] lg:px-[40px] py-[24px] screen-enter ${className}`}
+      className={`doc-canvas px-[10vw] sm:px-[24px] lg:px-[40px] py-[12px] screen-enter ${className}`}
     >
       {children}
     </div>

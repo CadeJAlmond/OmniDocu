@@ -1,6 +1,7 @@
 import React from "react";
 import { applyCustomStyles } from "./ApplyCustomStyles";
 import { Tooltip } from "./Tooltip";
+import { vertexThemeText } from "../VertexStyles";
 
 /**
  * @param {React.JSX} children - The label text for the checkbox input.
@@ -22,6 +23,10 @@ export default function Checkbox({
     // Default styling for the checkbox and label
     const defaultStylings = {
         checkbox: "toggle-label block overflow-hidden rounded-full bg-gray-700 cursor-pointer",
+        text: [ 
+            "text-nowrap", "text-sm", "font-medium", vertexThemeText.textSecondary,
+            "flex", "tracking-wide", "flex", "items-center", "justify-between"
+        ].join(" ")
     };
 
     const onClick = (e) => {
@@ -30,7 +35,9 @@ export default function Checkbox({
     }
 
     // Merge default styles with custom styles
-    const checkboxStyles = applyCustomStyles(defaultStylings.checkbox, {});
+    const checkboxStyles = applyCustomStyles(defaultStylings.checkbox, {} || styles.checkbox);
+
+    const textStyling = applyCustomStyles(defaultStylings.text, {} || styles.text);
 
     return (
         <span className="flex gap-[15px]">

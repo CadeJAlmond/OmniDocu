@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
-import HomeScreen from "./screens/HomeScreen";
+import HomeScreen from "./DocumentsHomePage/HomeScreen";
 import DocumentEditor from "./screens/DocumentEditor";
 
 export const router = createBrowserRouter([
@@ -9,7 +9,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <HomeScreen /> },
-      { path: "doc/:docId", element: <DocumentEditor /> },
+      { path: "/document/:documentId", element: <DocumentEditor /> },
     ],
   },
 ]);

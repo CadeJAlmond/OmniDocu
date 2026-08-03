@@ -11,28 +11,13 @@ import { Component, useState } from "react";
 
 import { applyCustomStyles } from "./ApplyCustomStyles";
 import { Tooltip } from "./Tooltip";
-import { vertexThemeBG } from "../VertexStyles";
-
-/**
- * @brief :   
- * @param {String} inputName 
- * @returns 
- */
-export function createFormDropdownMenu(formInputName, value, items, text) {
-  return {
-    FormInputComponent: DropdownMenu,
-    formInputProps: {
-      [formInputName]: {
-        value, items, text,
-      }
-    }
-  }
-}
+import { vertexThemeBG, vertexThemeText } from "../VertexStyles";
 
 export function DropdownMenuItem({ children, onSelect }) {
   const style = [
+    vertexThemeBG.surface,
     vertexThemeBG.surfaceHover,
-    "px-[15px] py-[5px] cursor-pointer text-[#f4f4f5]"
+    " px-[15px] py-[5px] cursor-pointer text-[#f4f4f5] "
   ].join(" ")
   return (
     <li className={style} onClick={(e) => {
@@ -104,13 +89,12 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
   const defaultStylings = {
     h: "min-h-[37.5px] max-h-[37.5px]",
     p: "px-[15px]",
-    color: "text-[#ffffff]",
-    bg: "bg-[transparent]",
     b: "border-[1.5px]",
-    text: "text-[17px] text-[#f4f4f5]/80",
+    tracking: "tracking-[0.65px]",
+    bg: vertexThemeBG.surface,
+    text: ["text-[17px]", vertexThemeText.textPrimary].join(" "),
     border: vertexThemeBG.border,
     rounded: "rounded-[5px]",
-    text: "text-[20px] text-[#ffffff]",
     flex: "flex",
     place: "place-content-between",
     wrap: "flex-wrap",
@@ -129,9 +113,10 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
     "gap-[2.5px]",
     "w-[100%]",
     "border-[2.5px]",
+    "font-[400px]",
     vertexThemeBG.border,
     vertexThemeBG.surface,
-    "rounded-[5px]",
+    "rounded-[2px]",
   ].join(" ");
 
   return (
@@ -141,10 +126,10 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
         onClick={() => setOpenedMenu(!openMenu)}
       >
         <div className="flex items-center gap-[4px]">
-          <span>{displaySelected}</span>
+          <h5 className="mt-[7px] text-[15.5px] font-[200]">{displaySelected}</h5>
           {tooltip && <Tooltip content={tooltip} />}
         </div>
-        <div>
+        <div className="translate-y-[-5px]">
           {openMenu ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
