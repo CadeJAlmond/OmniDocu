@@ -43,8 +43,8 @@ function DocIcon({ active }) {
 }
 
 const navigationContainerStyling = [
-  "bg-[#1c1816]",
-  "border-[#382e29] border-[1px]",
+  "bg-[#141418]",
+  "border-[#323f66]/60 border-r-[1px]",
   vertexThemeText.textNormal,
   "px-[6px]",
   "w-[40px]",

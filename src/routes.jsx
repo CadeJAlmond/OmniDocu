@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import HomeScreen from "./DocumentsHomePage/HomeScreen";
-import DocumentEditor from "./screens/DocumentEditor";
+import DocumentEditor from "./Editor/DocumentEditor";
 
 export const router = createBrowserRouter([
   {

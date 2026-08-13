@@ -69,12 +69,12 @@ export function DropdownMenuItemButton({ children, onSelect, left, right, value,
  * @param {string} onSelectionChange : on click callback function.
  * @returns {Component} An interactive dropdown-menu.
  */
-export default function DropdownMenu({ children, items = [], styles = {}, selectedItem, multiSelect = false, onSelectionChange, placeholderText = "", tooltip }) {
+export default function DropdownMenu({ children, items = [], styles = {}, selectedItem, multiSelect = false, onSelectionChange, placeHolderText = "", tooltip }) {
   const [openMenu, setOpenedMenu] = useState(false);
 
   const displaySelected = Array.isArray(selectedItem)
-    ? (selectedItem.length > 0 ? selectedItem[selectedItem.length - 1] : placeholderText)
-    : (selectedItem || placeholderText);
+    ? (selectedItem.length > 0 ? selectedItem[selectedItem.length - 1] : placeHolderText)
+    : (selectedItem || placeHolderText);
 
   const handleSelection = (eventData) => {
     if (onSelectionChange) {
@@ -89,7 +89,7 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
   const defaultStylings = {
     h: "min-h-[37.5px] max-h-[37.5px]",
     p: "px-[15px]",
-    b: "border-[1.5px]",
+    b: "border-[2.5px]",
     tracking: "tracking-[0.65px]",
     bg: vertexThemeBG.surface,
     text: ["text-[17px]", vertexThemeText.textPrimary].join(" "),
@@ -125,8 +125,8 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
         className={dropdownMenuStyling}
         onClick={() => setOpenedMenu(!openMenu)}
       >
-        <div className="flex items-center gap-[4px]">
-          <h5 className="mt-[7px] text-[15.5px] font-[200]">{displaySelected}</h5>
+        <div className="flex items-center gap-[px]">
+          <h5 className="mt-[7px] text-[15.5px] font-[200] h-[0px]">{displaySelected}</h5>
           {tooltip && <Tooltip content={tooltip} />}
         </div>
         <div className="translate-y-[-5px]">

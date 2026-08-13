@@ -13,9 +13,9 @@ export const vertexThemeColors = {
 };
 
 export const vertexThemeText = {
-  textPrimary: "text-[#f5f1ed]",
-  textSecondary: "text-[#f4ebe3]",
-  textNormal: "text-[#dfd5c9]/95",
+  textPrimary: "text-[#F0F0E6]",
+  textSecondary: "text-[#F0F0E6]/95",
+  textNormal: "text-[#F0F0E6]/85",
 
   danger: "text-[#837e85]",
 }
@@ -29,11 +29,11 @@ export const vertexThemeBG = {
   btnSecondary: "bg-[#F1655C]",
   btnSecondaryHover: "hover:bg-[#F1655C]/75",
 
-  background: "bg-[#26272C]",
-  appBackground: "bg-[#161311]",
-  surface: "bg-[#29221f]",
+  background: "",
+  appBackground: "bg-[#111113]",
+  surface: "bg-[#141418]",
   surfaceHover: "hover:bg-[#29221f]/60",
 
-  border: "border-[#9ca3af]/70",
+  border: "border-[#323f66]",
   danger: "bg-[#F1655C]",
 }
