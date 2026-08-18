@@ -1,0 +1,53 @@
+# Dockerfile for Node.js Express Backend (OmniDocu)
+# Multi-stage build for production optimization
+
+# Build stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json ./
+COPY tsconfig.json ./
+
+# Install all dependencies (including dev dependencies for TypeScript)
+RUN npm install
+
+# Copy source code
+COPY src ./src
+COPY schema.sql ./
+
+# Build TypeScript
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -u 1001 -S -G nodejs -D omnidocu
+
+# Copy only production dependencies
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy compiled output
+COPY --from=builder /app/dist ./dist
+
+# Copy schema
+COPY schema.sql ./schema.sql
+
+# Change ownership
+RUN chown -R omnidocu:nodejs /app
+USER omnidocu
+
+# Expose port
+EXPOSE 3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
+
+# Run the application
+CMD ["node", "dist/index.js"]

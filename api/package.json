@@ -1,0 +1,63 @@
+{
+  "name": "omnidocu-backend",
+  "version": "1.0.0",
+  "description": "Backend API for OmniDocu note-taking application",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --watch src --exec \"node --import ts-node/esm\" src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:prod": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "db:migrate": "node --loader ts-node/esm scripts/migrate.ts",
+    "db:seed": "node --loader ts-node/esm scripts/seed.ts"
+  },
+  "engines": {
+    "node": ">=20.x",
+    "npm": ">=10.x"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "typescript",
+    "postgresql",
+    "aws-s3",
+    "authentication"
+  ],
+  "author": "OmniDocu Team",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/lib-storage": "^3.600.0",
+    "aws-sdk-client-mock": "^3.3.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^8.0.0",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.12.3",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cjs": "^1.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.14.10",
+    "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^7.15.1",
+    "@typescript-eslint/parser": "^7.15.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
+  }
+}

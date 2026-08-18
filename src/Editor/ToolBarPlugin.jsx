@@ -13,21 +13,19 @@ import {
   $createParagraphNode,
 } from "lexical";
 
-import {$wrapNodes,$isAtNodeEnd} from "@lexical/selection";
+import { $wrapNodes, $isAtNodeEnd } from "@lexical/selection";
 
 import { $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
-import {$isListNode,ListNode} from "@lexical/list";
+import { $isListNode, ListNode } from "@lexical/list";
 
-import { createPortal } from "react-dom";
-import {$createHeadingNode, $isHeadingNode} from "@lexical/rich-text";
+import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
 
 import UndoIcon from '../images/icons/arrow-counterclockwise.svg'
 import RedoIcon from '../images/icons/arrow-clockwise.svg'
 import BoldIcon from '../images/icons/type-bold.svg'
 import ItalicIcon from '../images/icons/type-italic.svg'
-import RightAlignIcon from '../images/icons/text-right.svg'
-import LeftAlignIcon from '../images/icons/text-left.svg'
-import CenterAlignIcon from '../images/icons/text-center.svg'
+import SaveIcon from '../images/icons/save.svg'
+import DropdownMenu from "../vertez/DropdownMenu";
 
 const LowPriority = 1;
 
@@ -47,6 +45,15 @@ const blockTypeToBlockName = {
   ol: "Numbered List",
   paragraph: "Normal",
 };
+
+const alignmentOptions = ["Left", "Center", "Right"];
+const viewModes = ["Standard", "Markdown", "Display"];
+
+const blockTypeOptions = [
+  { value: "paragraph", label: "Normal" },
+  { value: "h1", label: "Large Heading" },
+  { value: "h2", label: "Small Heading" },
+];
 
 function Divider() {
   return <div className="divider" />;
@@ -68,100 +75,6 @@ function getSelectedNode(selection) {
   }
 }
 
-function BlockOptionsDropdownList({editor,blockType,toolbarRef,setShowBlockOptionsDropDown}) {
-  const dropDownRef = useRef(null);
-
-  useEffect(() => {
-    const toolbar = toolbarRef.current;
-    const dropDown = dropDownRef.current;
-
-    if (toolbar !== null && dropDown !== null) {
-      const { top, left } = toolbar.getBoundingClientRect();
-      dropDown.style.top = `${top + 40}px`;
-      dropDown.style.left = `${left}px`;
-    }
-  }, [dropDownRef, toolbarRef]);
-
-  useEffect(() => {
-    const dropDown = dropDownRef.current;
-    const toolbar = toolbarRef.current;
-
-    if (dropDown !== null && toolbar !== null) {
-      const handle = (event) => {
-        const target = event.target;
-
-        if (!dropDown.contains(target) && !toolbar.contains(target)) {
-          setShowBlockOptionsDropDown(false);
-        }
-      };
-      document.addEventListener("click", handle);
-
-      return () => {
-        document.removeEventListener("click", handle);
-      };
-    }
-  }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
-
-  const formatParagraph = () => {
-    if (blockType !== "paragraph") {
-      editor.update(() => {
-        const selection = $getSelection();
-
-        if ($isRangeSelection(selection)) {
-          $wrapNodes(selection, () => $createParagraphNode());
-        }
-      });
-    }
-    setShowBlockOptionsDropDown(false);
-  };
-
-  const formatLargeHeading = () => {
-    if (blockType !== "h1") {
-      editor.update(() => {
-        const selection = $getSelection();
-
-        if ($isRangeSelection(selection)) {
-          $wrapNodes(selection, () => $createHeadingNode("h1"));
-        }
-      });
-    }
-    setShowBlockOptionsDropDown(false);
-  };
-
-  const formatSmallHeading = () => {
-    if (blockType !== "h2") {
-      editor.update(() => {
-        const selection = $getSelection();
-
-        if ($isRangeSelection(selection)) {
-          $wrapNodes(selection, () => $createHeadingNode("h2"));
-        }
-      });
-    }
-    setShowBlockOptionsDropDown(false);
-  };
-
-  return (
-    <div className="dropdown" ref={dropDownRef}>
-      <button className="item" onClick={formatParagraph}>
-        <span className="icon paragraph" />
-        <span className="text">Normal</span>
-        {blockType === "paragraph" && <span className="active" />}
-      </button>
-      <button className="item" onClick={formatLargeHeading}>
-        <span className="icon large-heading" />
-        <span className="text">Large Heading</span>
-        {blockType === "h1" && <span className="active" />}
-      </button>
-      <button className="item" onClick={formatSmallHeading}>
-        <span className="icon small-heading" />
-        <span className="text">Small Heading</span>
-        {blockType === "h2" && <span className="active" />}
-      </button>
-    </div>
-  );
-}
-
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
@@ -169,13 +82,14 @@ export default function ToolbarPlugin() {
   const [canRedo, setCanRedo] = useState(false);
   const [blockType, setBlockType] = useState("paragraph");
   const [selectedElementKey, setSelectedElementKey] = useState(null);
-  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] = useState(
-    false
-  );
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [showHelpMenu, setShowHelpMenu] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
+  const [viewMode, setViewMode] = useState(viewModes[0]);
+  const [activeAlign, setActiveAlign] = useState("Left");
 
+  // Handle editor changes to track save status
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
@@ -215,6 +129,8 @@ export default function ToolbarPlugin() {
         editorState.read(() => {
           updateToolbar();
         });
+        // Mark as edited when there's an update
+        setIsEdited(true);
       }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
@@ -249,8 +165,55 @@ export default function ToolbarPlugin() {
 
   const iconStyling = "invert-[0.95]";
 
+  const handleSaveClick = () => {
+    setIsEdited(false);
+    // Trigger save action here if needed
+  };
+
+  const handleViewModeChange = (eventData) => {
+    setViewMode(eventData.event.value);
+    // For now, selecting a view mode does nothing functionally
+    // This is a placeholder for future implementation
+  };
+
+  const handleAlignmentChange = (eventData) => {
+    const value = eventData.event.value;
+    const alignValue = value.toLowerCase();
+    setActiveAlign(value);
+    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignValue);
+  };
+
+  const handleBlockTypeChange = (eventData) => {
+    const value = eventData.event.value.toLowerCase();
+    if (value !== blockType) {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const targetType = value === "large heading" ? "h1" :
+                            value === "small heading" ? "h2" : "paragraph";
+
+          if (targetType === "paragraph") {
+            $wrapNodes(selection, () => $createParagraphNode());
+          } else if (targetType === "h1") {
+            $wrapNodes(selection, () => $createHeadingNode("h1"));
+          } else if (targetType === "h2") {
+            $wrapNodes(selection, () => $createHeadingNode("h2"));
+          }
+        }
+      });
+      setBlockType(value === "large heading" ? "h1" :
+                  value === "small heading" ? "h2" : "paragraph");
+    }
+  };
+
+  const dropdownMenuStyling = { 
+    w: "w-[100%]", h: "h-[28px]", b: "border-[0px]", hover: "hover:bg-[#323f66]/100", rounded: "rounded-[0px]",
+    menu: { mt: "mt-[-2px]" }, 
+    label: { mt: "mt-[3px]", w: "w-[120px]", mr: "mr-[40px]", ml: "ml-[5px]" } 
+  }
+
   return (
-    <div className="w-[740px] mb-[-15px] flex h-[28px] bg-[#141418]/95 border-[#96A8DD]/60 border-[2px] rounded-t-[10px] px-[3px]" ref={toolbarRef}>
+    <div className="w-[740px] mb-[-15px] flex h-[28px] bg-[#141418]/95 border-[#96A8DD]/60 border-[2px] border-b-[0px] rounded-t-[10px] px-[3px]" ref={toolbarRef}>
       <button
         disabled={!canUndo}
         onClick={() => {
@@ -276,91 +239,84 @@ export default function ToolbarPlugin() {
       <Divider />
       {supportedBlockTypes.has(blockType) && (
         <>
-          <button
-            className={editButtonStyling + " w-[420px] text-[#fff] "}
-            onClick={() =>
-              setShowBlockOptionsDropDown(!showBlockOptionsDropDown)
-            }
-            aria-label="Formatting Options"
-          >
-            <span className={"icon block-type " + blockType} />
-            <span className="text">{blockTypeToBlockName[blockType]}</span>
-            <i className="chevron-down" />
-          </button>
-          {showBlockOptionsDropDown &&
-            createPortal(
-              <BlockOptionsDropdownList
-                editor={editor}
-                blockType={blockType}
-                toolbarRef={toolbarRef}
-                setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
-              />,
-              document.body
-            )}
+          {/* Block Type Dropdown - using custom DropdownMenu from vertez */}
+          <div className="w-[173px]">
+            <DropdownMenu
+              items={blockTypeOptions.map(item => item.label)}
+              selectedItem={blockTypeToBlockName[blockType] || "Normal"}
+              onSelectionChange={handleBlockTypeChange}
+              styles={dropdownMenuStyling}
+            />
+          </div>
           <Divider />
         </>
       )}
-        <>
-          <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-            }}
-            className={editButtonStyling}
-            aria-label="Format Bold"
-          >
-            <i className="format bold " />
-            <img src={BoldIcon} className={iconStyling}/>
-          </button>
-          <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
-            }}
-            className={editButtonStyling}
-            aria-label="Format Italics"
-          >
-            <i className="format italic" />
-            <img src={ItalicIcon} className={iconStyling}/>
-          </button>
-          <Divider />
-          <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
-            }}
-            className={editButtonStyling}
-            aria-label="Left Align"
-          >
-            <i className="format left-align" />
-            <img src={LeftAlignIcon} className={iconStyling}/>
-          </button>
-          <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
-            }}
-            className={editButtonStyling}
-            aria-label="Center Align"
-          >
-            <i className="format center-align" />
-            <img src={CenterAlignIcon} className={iconStyling}/>
-          </button>
-          <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
-            }}
-            className={editButtonStyling}
-            aria-label="Right Align"
-          >
-            <i className="format right-align " />
-            <img src={RightAlignIcon} className={iconStyling}/>
-          </button>
-          <button className={editButtonStyling + " text-[#fff]"} onClick={() => setShowHelpMenu(!showHelpMenu)}>
-            ?
-          </button>
-        </>
-        { showHelpMenu &&
-        <div className={"help-section-invisible bg-transparent"}>
-          <p className="bg-transparent" onClick={() => setShowHelpMenu(!showHelpMenu)}>Close ( X )</p>
-            </div>
-          }
+      <>
+        <button
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+          }}
+          className={editButtonStyling}
+          aria-label="Format Bold"
+        >
+          <i className="format bold " />
+          <img src={BoldIcon} className={iconStyling}/>
+        </button>
+        <button
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+          }}
+          className={editButtonStyling}
+          aria-label="Format Italics"
+        >
+          <i className="format italic" />
+          <img src={ItalicIcon} className={iconStyling}/>
+        </button>
+        <Divider />
+
+        {/* Alignment Dropdown - using custom DropdownMenu from vertez */}
+        <div className="alignment-dropdown w-[163px]">
+          <DropdownMenu
+            items={alignmentOptions}
+            selectedItem={'alignment'}
+            onSelectionChange={handleAlignmentChange}
+            styles={dropdownMenuStyling}
+          />
+        </div>
+
+        {/* View Mode Dropdown - using custom DropdownMenu from vertez */}
+        <div className="view-mode-dropdown w-[163px]">
+          <DropdownMenu
+            items={viewModes}
+            selectedItem={'view mode'}
+            onSelectionChange={handleViewModeChange}
+            styles={dropdownMenuStyling}
+          />
+        </div>
+
+        {/* Save Button with flash animation */}
+        <button
+          onClick={handleSaveClick}
+          className={editButtonStyling + " relative"}
+          aria-label="Save"
+        >
+          <i className="format save" />
+          <img src={SaveIcon} className={iconStyling}/>
+          {/* Flash animation when there are unsaved changes */}
+          {isEdited && (
+            <span className="absolute -top-[2px] -right-[2px] w-[8px] h-[8px] bg-blue-500 rounded-full animate-ping opacity-75"></span>
+          )}
+        </button>
+
+        <button className={editButtonStyling + " text-[#fff]"} onClick={() => setShowHelpMenu(!showHelpMenu)}>
+          ?
+        </button>
+      </>
+      { showHelpMenu &&
+      <div className={"help-section-invisible bg-transparent"}>
+        <p className="bg-transparent" onClick={() => setShowHelpMenu(!showHelpMenu)}>Close ( X )</p>
+      </div>
+      }
     </div>
   );
 }

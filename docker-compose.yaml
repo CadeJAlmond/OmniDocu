@@ -1,0 +1,137 @@
+# Docker Compose for OmniDocu
+# Full stack: PostgreSQL, PGAdmin, Node.js Express Backend, React Vite Frontend
+
+name: omnidocu
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: omnidocu-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-omnidocu}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-omnidocu_password}
+      POSTGRES_DB: ${DB_NAME:-omnidocu_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./api/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - omnidocu-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-omnidocu} -d ${DB_NAME:-omnidocu_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # PGAdmin (Database UI)
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: omnidocu-pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@omnidocu.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_password}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 1
+      PGADMIN_CONFIG_LOG_FILE_PLACEHOLDER: '/tmp/pgadmin_%()s.log'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./init_pgadmin.sh:/docker-entrypoint-initdb.d/init_pgadmin.sh
+    ports:
+      - "5050:80"
+    networks:
+      - omnidocu-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Node.js Express Backend
+  backend:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.backend
+    container_name: omnidocu-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-omnidocu}
+      DB_PASSWORD: ${DB_PASSWORD:-omnidocu_password}
+      DB_NAME: ${DB_NAME:-omnidocu_db}
+      DB_SSL: 'false'
+      PORT: 3001
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_change_in_production}
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "3001:3001"
+    networks:
+      - omnidocu-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # React Vite Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: omnidocu-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:3001/api/v1
+    ports:
+      - "3000:80"
+    networks:
+      - omnidocu-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Named volumes for persistent storage
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+# Custom network
+networks:
+  omnidocu-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

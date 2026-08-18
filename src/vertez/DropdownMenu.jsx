@@ -21,8 +21,8 @@ export function DropdownMenuItem({ children, onSelect }) {
   ].join(" ")
   return (
     <li className={style} onClick={(e) => {
-        e.stopPropagation(); 
-        onSelect({ event: { name: children, value: children } });
+      e.stopPropagation();
+      onSelect({ event: { name: children, value: children } });
     }}>
       {children}
     </li>
@@ -37,8 +37,8 @@ const generateButton = (buttonData, children) => {
   const { label, onClick } = buttonData;
   return (
     <button onClick={(e) => {
-        e.stopPropagation();
-        onClick(label, { event: { name: children, value: children } });
+      e.stopPropagation();
+      onClick(label, { event: { name: children, value: children } });
     }}>{label}</button>
   )
 }
@@ -49,8 +49,8 @@ export function DropdownMenuItemButton({ children, onSelect, left, right, value,
 
   return (
     <li className={`px-[15px] py-[5px] cursor-pointer ${vertexThemeBG.surfaceHover} text-[#f4f4f5] flex place-content-between items-center`} onClick={(e) => {
-        e.stopPropagation();
-        onSelect({ ...props, event: { name: children, value: label ?? children } });
+      e.stopPropagation();
+      onSelect({ ...props, event: { name: children, value: label ?? children } });
     }}>
       {leftButtonElement} {children} {rightButtonElement}
     </li>
@@ -95,10 +95,8 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
     text: ["text-[17px]", vertexThemeText.textPrimary].join(" "),
     border: vertexThemeBG.border,
     rounded: "rounded-[5px]",
-    flex: "flex",
+    flex: "flex flex-col",
     place: "place-content-between",
-    wrap: "flex-wrap",
-    relative: "relative",
     w: "min-w-[90%] max-w-[90%]",
     item: "items-center",
     cursor: "cursor-pointer"
@@ -107,17 +105,26 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
   // Apply custom styles on top of the default styles
   const dropdownMenuStyling = applyCustomStyles(defaultStylings, styles);
 
-  const openedMenuCss = [
-    "flex",
-    "flex-col",
-    "gap-[2.5px]",
-    "w-[100%]",
-    "border-[2.5px]",
-    "font-[400px]",
-    vertexThemeBG.border,
-    vertexThemeBG.surface,
-    "rounded-[2px]",
-  ].join(" ");
+  const openedMenuCss = {
+    flex: "flex flex-col",
+    gap: "gap-[2.5px]",
+    w: "w-[100%]",
+    border: "border-[2.5px]",
+    font: "font-[400px]",
+    border: vertexThemeBG.border,
+    surface: vertexThemeBG.surface,
+    rounded: "rounded-[2px]",
+  };
+  const menuStyling = applyCustomStyles(openedMenuCss, styles?.menu || {});
+
+  const labelCss = { 
+    mt: "mt-[7px]",
+    text: "text-[15.5px]",
+    font: "font-[200]",
+    h: "h-[0px]"
+  }
+
+  const labelStyling = applyCustomStyles(labelCss, styles?.label || {});
 
   return (
     <>
@@ -125,36 +132,36 @@ export default function DropdownMenu({ children, items = [], styles = {}, select
         className={dropdownMenuStyling}
         onClick={() => setOpenedMenu(!openMenu)}
       >
-        <div className="flex items-center gap-[px]">
-          <h5 className="mt-[7px] text-[15.5px] font-[200] h-[0px]">{displaySelected}</h5>
+        <div className="flex items-center justify-center">
+          <h5 className={labelStyling}>{displaySelected}</h5>
+          <div className="">
+            {openMenu ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                class="bi bi-caret-up"
+                viewBox="0 0 16 16"
+              >
+                <path d="M3.204 11h9.592L8 5.519zm-.753-.659 4.796-5.48a1 1 0 0 1 1.506 0l4.796 5.48c.566.647.106 1.659-.753 1.659H3.204a1 1 0 0 1-.753-1.659" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                fill="currentColor"
+                class="bi bi-caret-down"
+                viewBox="0 0 16 16"
+              >
+                <path d="M3.204 5h9.592L8 10.481zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659" />
+              </svg>
+            )}
+          </div>
           {tooltip && <Tooltip content={tooltip} />}
         </div>
-        <div className="translate-y-[-5px]">
-          {openMenu ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              class="bi bi-caret-up"
-              viewBox="0 0 16 16"
-            >
-              <path d="M3.204 11h9.592L8 5.519zm-.753-.659 4.796-5.48a1 1 0 0 1 1.506 0l4.796 5.48c.566.647.106 1.659-.753 1.659H3.204a1 1 0 0 1-.753-1.659" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              fill="currentColor"
-              class="bi bi-caret-down"
-              viewBox="0 0 16 16"
-            >
-              <path d="M3.204 5h9.592L8 10.481zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659" />
-            </svg>
-          )}
-        </div>
-        <ul className={openMenu ? openedMenuCss : " w-[100%] "}>
+        <ul className={openMenu ? menuStyling : " w-[100%] "}>
           {openMenu && (children ? children : items.map((item, index) => {
             if (typeof (item) === "string") {
               return (
